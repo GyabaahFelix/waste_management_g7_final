@@ -1,128 +1,128 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { Trash2, MapPin, CheckCircle, Clock, ArrowRight, Camera, Upload, Loader, Calendar, Weight, Search } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { toast } from 'react-hot-toast'
-import { getWasteCollectionTasks, updateTaskStatus, saveReward, saveCollectedWaste, getUserByEmail } from '@/utils/db/actions'
-import { GoogleGenerativeAI } from "@google/generative-ai"
+'use client';
+import { useState, useEffect } from 'react';
+import { Trash2, MapPin, CheckCircle, Clock, ArrowRight, Camera, Upload, Loader, Calendar, Weight, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'react-hot-toast';
+import { getWasteCollectionTasks, updateTaskStatus, saveReward, saveCollectedWaste, getUserByEmail } from '@/utils/db/actions';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Make sure to set your Gemini API key in your environment variables
-const geminiApiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY
+const geminiApiKey = process.env.GEMINI_API_KEY;
 
 type CollectionTask = {
-  id: number
-  location: string
-  wasteType: string
-  amount: string
-  status: 'pending' | 'in_progress' | 'completed' | 'verified'
-  date: string
-  collectorId: number | null
-}
+  id: number;
+  location: string;
+  wasteType: string;
+  amount: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'verified';
+  date: string;
+  collectorId: number | null;
+};
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 5;
 
 export default function CollectPage() {
-  const [tasks, setTasks] = useState<CollectionTask[]>([])
-  const [loading, setLoading] = useState(true)
-  const [hoveredWasteType, setHoveredWasteType] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [user, setUser] = useState<{ id: number; email: string; name: string } | null>(null)
+  const [tasks, setTasks] = useState<CollectionTask[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hoveredWasteType, setHoveredWasteType] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [user, setUser] = useState<{ id: number; email: string; name: string; } | null>(null);
 
   useEffect(() => {
     const fetchUserAndTasks = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         // Fetch user
-        const userEmail = localStorage.getItem('userEmail')
+        const userEmail = localStorage.getItem('userEmail');
         if (userEmail) {
-          const fetchedUser = await getUserByEmail(userEmail)
+          const fetchedUser = await getUserByEmail(userEmail);
           if (fetchedUser) {
-            setUser(fetchedUser)
+            setUser(fetchedUser);
           } else {
-            toast.error('User not found. Please log in again.')
+            toast.error('User not found. Please log in again.');
             // Redirect to login page or handle this case appropriately
           }
         } else {
-          toast.error('User not logged in. Please log in.')
+          toast.error('User not logged in. Please log in.');
           // Redirect to login page or handle this case appropriately
         }
 
         // Fetch tasks
-        const fetchedTasks = await getWasteCollectionTasks()
-        setTasks(fetchedTasks as CollectionTask[])
+        const fetchedTasks = await getWasteCollectionTasks();
+        setTasks(fetchedTasks as CollectionTask[]);
       } catch (error) {
-        console.error('Error fetching user and tasks:', error)
-        toast.error('Failed to load user data and tasks. Please try again.')
+        console.error('Error fetching user and tasks:', error);
+        toast.error('Failed to load user data and tasks. Please try again.');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUserAndTasks()
-  }, [])
+    fetchUserAndTasks();
+  }, []);
 
-  const [selectedTask, setSelectedTask] = useState<CollectionTask | null>(null)
-  const [verificationImage, setVerificationImage] = useState<string | null>(null)
-  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'verifying' | 'success' | 'failure'>('idle')
+  const [selectedTask, setSelectedTask] = useState<CollectionTask | null>(null);
+  const [verificationImage, setVerificationImage] = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'verifying' | 'success' | 'failure'>('idle');
   const [verificationResult, setVerificationResult] = useState<{
     wasteTypeMatch: boolean;
     quantityMatch: boolean;
     confidence: number;
-  } | null>(null)
-  const [reward, setReward] = useState<number | null>(null)
+  } | null>(null);
+  const [reward, setReward] = useState<number | null>(null);
 
   const handleStatusChange = async (taskId: number, newStatus: CollectionTask['status']) => {
     if (!user) {
-      toast.error('Please log in to collect waste.')
-      return
+      toast.error('Please log in to collect waste.');
+      return;
     }
 
     try {
-      const updatedTask = await updateTaskStatus(taskId, newStatus, user.id)
+      const updatedTask = await updateTaskStatus(taskId, newStatus, user.id);
       if (updatedTask) {
-        setTasks(tasks.map(task => 
+        setTasks(tasks.map(task =>
           task.id === taskId ? { ...task, status: newStatus, collectorId: user.id } : task
-        ))
-        toast.success('Task status updated successfully')
+        ));
+        toast.success('Task status updated successfully');
       } else {
-        toast.error('Failed to update task status. Please try again.')
+        toast.error('Failed to update task status. Please try again.');
       }
     } catch (error) {
-      console.error('Error updating task status:', error)
-      toast.error('Failed to update task status. Please try again.')
+      console.error('Error updating task status:', error);
+      toast.error('Failed to update task status. Please try again.');
     }
-  }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setVerificationImage(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setVerificationImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const readFileAsBase64 = (dataUrl: string): string => {
-    return dataUrl.split(',')[1]
-  }
+    return dataUrl.split(',')[1];
+  };
 
   const handleVerify = async () => {
     if (!selectedTask || !verificationImage || !user) {
-      toast.error('Missing required information for verification.')
-      return
+      toast.error('Missing required information for verification.');
+      return;
     }
 
-    setVerificationStatus('verifying')
-    
-    try {
-      const genAI = new GoogleGenerativeAI(geminiApiKey!)
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    setVerificationStatus('verifying');
 
-      const base64Data = readFileAsBase64(verificationImage)
+    try {
+      const genAI = new GoogleGenerativeAI(geminiApiKey!);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const base64Data = readFileAsBase64(verificationImage);
 
       const imageParts = [
         {
@@ -131,7 +131,7 @@ export default function CollectPage() {
             mimeType: 'image/jpeg', // Adjust this if you know the exact type
           },
         },
-      ]
+      ];
 
       const prompt = `You are an expert in waste management and recycling. Analyze this image and provide:
         1. Confirm if the waste type matches: ${selectedTask.wasteType}
@@ -143,68 +143,69 @@ export default function CollectPage() {
           "wasteTypeMatch": true/false,
           "quantityMatch": true/false,
           "confidence": confidence level as a number between 0 and 1
-        }`
+        }`;
 
-      const result = await model.generateContent([prompt, ...imageParts])
-      const response = await result.response
-      const text = response.text()
-      
+        const result = await model.generateContent([prompt, ...imageParts]);
+        const response = await result.response;
+        const text = await response.text(); // Fix here by adding await
+        
+
       try {
-        const parsedResult = JSON.parse(text)
+        const parsedResult = JSON.parse(text);
         setVerificationResult({
           wasteTypeMatch: parsedResult.wasteTypeMatch,
           quantityMatch: parsedResult.quantityMatch,
           confidence: parsedResult.confidence
-        })
-        setVerificationStatus('success')
-        
+        });
+        setVerificationStatus('success');
+
         if (parsedResult.wasteTypeMatch && parsedResult.quantityMatch && parsedResult.confidence > 0.7) {
-          await handleStatusChange(selectedTask.id, 'verified')
-          const earnedReward = Math.floor(Math.random() * 50) + 10 // Random reward between 10 and 59
-          
+          await handleStatusChange(selectedTask.id, 'verified');
+          const earnedReward = Math.floor(Math.random() * 50) + 10; // Random reward between 10 and 59
+
           // Save the reward
-          await saveReward(user.id, earnedReward)
+          await saveReward(user.id, earnedReward);
 
           // Save the collected waste
-          await saveCollectedWaste(selectedTask.id, user.id, parsedResult)
+          await saveCollectedWaste(selectedTask.id, user.id, parsedResult);
 
-          setReward(earnedReward)
+          setReward(earnedReward);
           toast.success(`Verification successful! You earned ${earnedReward} tokens!`, {
             duration: 5000,
             position: 'top-center',
-          })
+          });
         } else {
           toast.error('Verification failed. The collected waste does not match the reported waste.', {
             duration: 5000,
             position: 'top-center',
-          })
+          });
         }
       } catch (error) {
         console.log(error);
-        
-        console.error('Failed to parse JSON response:', text)
-        setVerificationStatus('failure')
+
+        console.error('Failed to parse JSON response:', text);
+        setVerificationStatus('failure');
       }
     } catch (error) {
-      console.error('Error verifying waste:', error)
-      setVerificationStatus('failure')
+      console.error('Error verifying waste:', error);
+      setVerificationStatus('failure');
     }
-  }
+  };
 
   const filteredTasks = tasks.filter(task =>
     task.location.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  );
 
-  const pageCount = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE)
+  const pageCount = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE);
   const paginatedTasks = filteredTasks.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
-  )
+  );
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold mb-6 text-gray-800">Waste Collection Tasks</h1>
-      
+
       <div className="mb-4 flex items-center">
         <Input
           type="text"
@@ -237,7 +238,7 @@ export default function CollectPage() {
                 <div className="grid grid-cols-3 gap-2 text-sm text-gray-600 mb-3">
                   <div className="flex items-center relative">
                     <Trash2 className="w-4 h-4 mr-2 text-gray-500" />
-                    <span 
+                    <span
                       onMouseEnter={() => setHoveredWasteType(task.wasteType)}
                       onMouseLeave={() => setHoveredWasteType(null)}
                       className="cursor-pointer"
@@ -367,23 +368,23 @@ export default function CollectPage() {
         <p className="text-sm text-red-600 mb-4">Please log in to collect waste and earn rewards.</p>
       )} */}
     </div>
-  )
+  );
 }
 
-function StatusBadge({ status }: { status: CollectionTask['status'] }) {
+function StatusBadge({ status }: { status: CollectionTask['status']; }) {
   const statusConfig = {
     pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
     in_progress: { color: 'bg-blue-100 text-blue-800', icon: Trash2 },
     completed: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
     verified: { color: 'bg-purple-100 text-purple-800', icon: CheckCircle },
-  }
+  };
 
-  const { color, icon: Icon } = statusConfig[status]
+  const { color, icon: Icon } = statusConfig[status];
 
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${color} flex items-center`}>
       <Icon className="mr-1 h-3 w-3" />
       {status.replace('_', ' ')}
     </span>
-  )
+  );
 }
