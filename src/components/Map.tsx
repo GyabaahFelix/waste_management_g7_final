@@ -59,7 +59,7 @@ export default function Map() {
             <Marker key={index} position={[point.lat, point.lng]} icon={leafIcon}>
               <Popup>
                 Waste Hotspot <br />
-                <Leaf className="w-6 h-6 inline-block mr-2 text-green-600" />
+                <Leaf className="w-6 h-6 inline-block mr-2 text-purple-600" />
                 High waste generation area
               </Popup>
             </Marker>

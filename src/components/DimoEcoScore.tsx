@@ -55,11 +55,11 @@
 //   return (
 //     <div className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
 //       <div className="flex items-center mb-4">
-//         <Leaf className="h-8 w-8 text-green-500 mr-3" />
+//         <Leaf className="h-8 w-8 text-purple-500 mr-3" />
 //         <h3 className="text-xl font-semibold text-gray-800">Eco Score</h3>
 //       </div>
 //       <div className="flex items-end">
-//         <p className="text-5xl font-bold text-green-600">{ecoScoreData.score}</p>
+//         <p className="text-5xl font-bold text-purple-600">{ecoScoreData.score}</p>
 //         <p className="ml-2 text-gray-500 mb-1">/100</p>
 //       </div>
 //       <div className="mt-4 text-sm text-gray-600">
