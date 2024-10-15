@@ -1676,10 +1676,10 @@
     "@motionone/dom" "^10.16.4"
     tslib "^2.3.1"
 
-"@neondatabase/serverless@^0.9.4":
-  version "0.9.4"
-  resolved "https://registry.npmjs.org/@neondatabase/serverless/-/serverless-0.9.4.tgz"
-  integrity sha512-D0AXgJh6xkf+XTlsO7iwE2Q1w8981E1cLCPAALMU2YKtkF/1SF6BiAzYARZFYo175ON+b1RNIy9TdSFHm5nteg==
+"@neondatabase/serverless@^0.9.5":
+  version "0.9.5"
+  resolved "https://registry.npmjs.org/@neondatabase/serverless/-/serverless-0.9.5.tgz"
+  integrity sha512-siFas6gItqv6wD/pZnvdu34wEqgG3nSE6zWZdq5j2DEsa+VvX8i/5HXJOo06qrw5axPXn+lGCxeR+NLaSPIXug==
   dependencies:
     "@types/pg" "8.11.6"
 
