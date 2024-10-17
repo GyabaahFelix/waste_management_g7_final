@@ -106,7 +106,7 @@ export default function Home() {
 
       <section className="grid md:grid-cols-3 gap-10 mb-20">
         <FeatureCard
-          icon={Leaf}
+          icon={RecycleIcon}
           title="Eco-Friendly"
           description="Help create a cleaner environment by reporting and gathering waste."
           bgClass="bg-gradient-to-b from-purple-100 to-blue-50"
