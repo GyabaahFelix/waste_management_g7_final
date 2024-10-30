@@ -16,7 +16,7 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const API_KEY = process.env.GOOGLE_MAP_API_KEY;
+    const API_KEY = "AIzaSyB6IwffEJ7YFtgsXMkQ5Sde_WXTEKneDhE";
     console.log('API Key:', API_KEY ? 'Present' : 'Missing');
   }, []);
 
