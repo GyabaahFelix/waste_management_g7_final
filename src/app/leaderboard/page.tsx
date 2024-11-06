@@ -65,54 +65,45 @@ export default function LeaderboardPage() {
                 <Award className="h-10 w-10" />
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rank</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Points</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rewards.map((reward, index) => (
-                    <tr key={reward.id} className={`${user && user.id === reward.userId ? 'bg-indigo-50' : ''} hover:bg-gray-50 transition-colors duration-150 ease-in-out`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          {index < 3 ? (
-                            <Crown className={`h-6 w-6 ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-400' : 'text-yellow-600'}`} />
-                          ) : (
-                            <span className="text-sm font-medium text-gray-900">{index + 1}</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <User className="h-full w-full rounded-full bg-gray-200 text-gray-500 p-2" />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{reward.userName}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Award className="h-5 w-5 text-indigo-500 mr-2" />
-                          <div className="text-sm font-semibold text-gray-900">{reward.points.toLocaleString()}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                          Level {reward.level}
-                        </span>
-                      </td>
+              <div className="overflow-x-auto sm:rounded-lg">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider sm:px-6">Rank</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider sm:px-6">User</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider sm:px-6">Points</th>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider sm:px-6">Level</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {rewards.map((reward, index) => (
+                      <tr key={reward.id} className={`hover:bg-gray-50 ${user && user.id === reward.userId ? 'bg-indigo-50' : ''}`}>
+                        <td className="px-4 py-2 sm:px-6">
+                          <div className="flex items-center">
+                            {index < 3 ? (
+                              <Crown className={`h-6 w-6 ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-400' : 'text-yellow-600'}`} />
+                            ) : (
+                              <span className="text-sm font-medium text-gray-900">{index + 1}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2 sm:px-6 flex items-center">
+                          <User className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 p-1" />
+                          <span className="ml-2 text-sm sm:text-base">{reward.userName}</span>
+                        </td>
+                        <td className="px-4 py-2 text-sm font-semibold text-gray-700 sm:px-6">
+                          <Award className="h-5 w-5 text-indigo-500 mr-2" />
+                          {reward.points.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-2 sm:px-6">
+                          <span className="text-sm sm:text-base bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">Level {reward.level}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
           </div>
         )}
       </div>

@@ -229,7 +229,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
         <div className="flex items-center">
           {isMobile && (
             <Button variant="ghost" size="icon" className="mr-2">
-              <Search className="h-5 w-5" />
+              {/* <Search className="h-5 w-5" /> */}
             </Button>
           )}
           <DropdownMenu>
